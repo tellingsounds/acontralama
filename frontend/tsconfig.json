@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "lib": ["ES2019", "dom", "DOM.Iterable"],
+    "jsx": "react",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "paths": {
+      "*": ["types/*", "src/*"]
+    },
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "ES2019",
+    "typeRoots": ["node_modules/@types"],
+    "useUnknownInCatchVariables": false
+  },
+  "include": ["src"]
+}

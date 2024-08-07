@@ -1,0 +1,7 @@
+# cpython binaries
+__pycache__/
+*.pyc
+
+# distribution artifacts
+dist/
+lama.egg-info/

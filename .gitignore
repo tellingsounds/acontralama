@@ -1,0 +1,37 @@
+git_revision.txt
+
+*.woff2
+*.woff
+.DS_Store
+
+frontend/node_modules/
+frontend/dist/*
+!frontend/dist/favicon*.ico
+frontend/lib/
+frontend/stuff/
+/.venv/
+.vscode/
+
+# cpython binaries
+__pycache__/
+*.pyc
+
+# distribution artifacts
+dist/
+lama.egg-info/
+
+dumps/*
+
+cookie_secret
+jwt_secret
+cookie_secret
+error.log
+jwt_secret
+lama.db
+lama_users.db
+
+
+bottle/backend/lama/debug.log
+debug.log
+
+

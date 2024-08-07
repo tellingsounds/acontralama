@@ -1,0 +1,42 @@
+// generated 2024-07-22T14:16:51.425005 by gen_typescript.py - don't make changes here! :)
+
+export const allowedFieldsMap = {
+  Element: [
+    '_id',
+    'type',
+    'clip',
+    'label',
+    'description',
+    'timecodes',
+    'created',
+    'createdBy',
+    'updated',
+    'updatedBy',
+  ],
+  Segment: [
+    '_id',
+    'type',
+    'clip',
+    'label',
+    'description',
+    'timecodes',
+    'segmentContains',
+    'created',
+    'createdBy',
+    'updated',
+    'updatedBy',
+  ],
+  Layer: [
+    '_id',
+    'type',
+    'clip',
+    'element',
+    'label',
+    'description',
+    'timecodes',
+    'created',
+    'createdBy',
+    'updated',
+    'updatedBy',
+  ],
+};
