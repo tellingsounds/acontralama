@@ -44,3 +44,98 @@ Falböck, Gaby/Feldinger, Norbert P., &quot;Vier Zonen, vier Konzepte, Akteure m
 
 Pensold, Wolfgang, _Zur Geschichte des Rundfunks in Österreich: Programm für die Nation_, Wiesbaden 2018.
 
+
+# About the application
+
+LAMA is a web application implemented in TypeScript (React, Material UI), with a REST-backend implemented in Python (Bottle), developed in the _Telling Sounds_ project at the mdw Vienna by Julia Jaklin and Peter Provaznik and has been adapted to suite the needs of the _ACONTRA_ project by Julia Jaklin.
+All user actions that produce changes are stored in an event log (a SQLite database).
+This provides a full history, makes restoring past states or undoing unwanted actions simple, while also providing flexibility regarding changes in data representation.
+The data from the event log is fed into a MongoDB server, making the current application state available for querying and retrieval.
+This means that the event log is the source of truth for the system, from which the MongoDB representation is created. This can be done with the `reset_from_eventlog.py` script, either restoring the state from the current events database, or providing an exported (`lama.importexport`) XML file.
+
+## Local manual build
+
+### Prerequisites
+
++ Python 3.8 or newer
++ current Node.js (last version used was v16.15.0)
++ MongoDB 4.4 server running at `localhost:27017`
+
+### Building
+
++ `cd` to the project root
++ we recommend creating virtualenv: `$ python3 -m venv .venv`
++ activate virtualenv (or use `.venv/bin/python`): `$ . .venv/bin/activate`
++ install python packages: `$ pip install -e backend/`
++ `$ cd frontend/`
++ install npm packages: `$ npm install`
++ compile JavaScript: `$ API_URL="http://localhost:3333" WS_URL="ws://localhost:3333/ws" npm run build:production` (ignore warnings/errors)
+
+### Setup
+
++ `cd` back to project root: `$ cd ..`
++ create user: `$ python scripts/lamaherder.py createuser admin --privileges a --password Admin123`
++ optionally import data: `$ python scripts/replace_mongo_data.py full.json` (or `PhA.json`)
+
+### Running
+
++ (use two separate terminal windows)
++ start MongoDB if you haven't already
++ start backend (again use virtualenv): `$ python -m lama.server --cors`
++ frontend needs a web server to work properly, for example: `$ (cd frontend/dist/ && python -m http.server)`
++ point your web browser at `http://localhost:8000` (if using the above command)
+
+## Local development
+
++ build and setup are identical to local build, no need to compile JS though
++ start backend: `$ python -m lama.server --dev`
++ start frontend dev server: `$ (cd frontend/ && npm run start)`
++ (the dev server provides live reloading; on Linux, if you get an error about too many open files, you could try: `$ sysctl fs.inotify.max_user_watches=524288 && sysctl -p`)
+
+## Additional notes for development
+
++ Whenever the word "Connection" appears in the code, it should probably be "Annotation".
++ Unfortunately, the code is not well-documented (sorry!); looking at the Props of React components and their type can really help.
++ If you're seriously going to do something with this, we suggest you reach out to the developers for support.
+
+
+## User management
+
+User data is stored in a separate SQLite DB (default: `lama_users.db`). Users can be managed through either a CLI-script (`scripts/lamaherder.py`) or the API (`/users`). However, if there are no existing users, an (probably admin) user will have to be created using the script.
+
+    usage: lamaherder.py [-h] [--password [PASSWORD]] [--email EMAIL] [--privileges rwa] [--active yn]
+                         [--reauth yn]
+                         {showusers,createuser,deleteuser,updateuser} [username]
+
+For example: `$ python3 scripts/lamaherder.py createuser admin --privileges a --password MyPass234`
+
+(Usernames need to be 2-12 lowercase letters; passwords need to be 8-16 letters/numbers with at least one uppercase/lowercase/number.)
+
+Once a user has been created, these credentials can be used to obtain an access token.
+
+    $ curl -Ss -H 'Content-type: application/json' -d '{"username": "admin", "password": "MyPass234"}' <backend_url>/auth
+
+Response:
+
+    {
+      "username": "admin",
+      "privileges": "a",
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDAwOTg1MjAsInVzciI6InBwcm92YXpuaWsiLCJwcnYiOiJhIn0.KxIjvVYQpD_ffc6wfP-_dMXyPAMESYFlWeQlIOeq0DY",
+      "expires": "2021-12-21T14:55:20+00:00"
+    }
+
+Then create users via API:
+
+    $ curl -Ss -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NDAwOTg1MjAsInVzciI6InBwcm92YXpuaWsiLCJwcnYiOiJhIn0.KxIjvVYQpD_ffc6wfP-_dMXyPAMESYFlWeQlIOeq0DY' -H 'Content-type: application/json' -X POST -d '{"username": "testuser"}' <backend_url>/users
+
+Response:
+
+    {"password": "RjJ4BBVtKqoq"}
+
+If no password is set, it will be generated. See the `/users` routes in `server.py` for details.
+
+
+### API Routes
+
+See [routes.md](routes.md).
+
